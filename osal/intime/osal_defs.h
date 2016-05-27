@@ -59,9 +59,11 @@ extern "C"
     #endif
 #endif
 
-#define OSAL_THREAD_HANDLE   RTHANDLE
+#define OSAL_THREAD_HANDLE   HANDLE
 #define OSAL_THREAD_FUNC     void
 #define OSAL_THREAD_FUNC_RT  void
+
+#define OSAL_EVENT_HANDLE    HANDLE
 
 #ifdef __cplusplus
 }

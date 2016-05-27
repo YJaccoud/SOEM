@@ -279,6 +279,29 @@ static uint8 ecx_parentport(ecx_contextt *context, uint16 parent)
    return parentport;
 }
 
+uint64 ec_getmasterdctime(void)
+{
+  return ecx_getmasterdctime(&ecx_context);
+}
+
+/**
+* Todo yja. Algo found in ecx_configdc(...)
+*
+* @param[in]  context        = context struct
+* @return DC of master
+*/
+uint64 ecx_getmasterdctime(ecx_contextt *context)
+{
+  ec_timet mastertime;
+  uint64 mastertime64;
+
+  mastertime = osal_current_time();
+  mastertime.sec -= 946684800UL;  /* EtherCAT uses 2000-01-01 as epoch start instead of 1970-01-01 */
+  mastertime64 = (((uint64)mastertime.sec * 1000000) + (uint64)mastertime.usec) * 1000;
+
+  return mastertime64;
+}
+
 /**
  * Locate DC slaves, measure propagation delays.
  *

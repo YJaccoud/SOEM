@@ -13,7 +13,9 @@ Windows (Visual Studio)
  * Start a Visual Studio command prompt then:
    * `mkdir build`
    * `cd build`
-   * `cmake .. -G "NMake Makefiles"`
+   * `cmake .. -G "NMake Makefiles" -DCOMPILATION_FOR_INTIME:BOOL=FALSE`
+   *  OR
+   * `cmake .. -G "Visual Studio 12" -DCOMPILATION_FOR_INTIME:BOOL=TRUE`
    * `nmake`
 
 Linux
@@ -24,7 +26,16 @@ Linux
    * `cmake ..`
    * `make`
 
-Want to contribute to SOEM or SOES?
+Install
+-------
+ * `cd build`
+ * `cmake --build . --target install`
+
+Doc html
+--------
+ * `doxygen.exe  Doxyfile`
+
+ Want to contribute to SOEM or SOES?
 -----------------------------------
 
 If you want to contribute to SOEM or SOES you will need to sign a Contributor

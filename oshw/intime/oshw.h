@@ -48,8 +48,8 @@
 #define _oshw_
 
 #include "ethercattype.h"
-#include "ethercatmain.h"
 #include "nicdrv.h"
+#include "ethercatmain.h"
 
 #ifdef __cplusplus
 extern "C" {

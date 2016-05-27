@@ -101,14 +101,14 @@ const uint16 secMAC[3] = { 0x0404, 0x0404, 0x0404 };
 #define RX_PRIM priMAC[1]
 /** second MAC word is used for identification */
 #define RX_SEC secMAC[1]
-
+/*
 #ifdef EC_VER1
 
 ecx_portt      ecx_port;
 ecx_redportt   ecx_redport;
 
 #endif
-
+*/
 #define ECAT_PRINT_INFO    printf
 #define ECAT_PRINT_WARN    printf
 #define ECAT_PRINT_ERROR   printf
@@ -132,9 +132,34 @@ int ecx_setupnic(ecx_portt *port, const char *ifname, int secondary)
    int dontWaitForLink = 0;
    int result = 1;
    HPE_CONFIG_OPTIONS conf = { 0, 0, NULL};
+   
+   //HPEHANDLE handle;
+   
+   /*
+   status = hpeOpen("ie1g0", (PROBE_ONLY), ALL_INTERRUPTS, &handle);
+   printf("hpeOpen PROBE_ONLY, status : ");
+   switch (status)
+   {
+   case(E_OK) :
+     printf("E_OK\n");
+     break;
+   case(E_LIMIT):
+     printf("E_LIMIT\n");
+     break;
+   case(E_CONTEXT):
+     printf("E_CONTEXT\n");
+     break;
+   case(E_PARAM):
+     printf("E_PARAM\n");
+     break;
+   case(E_BAD_ADDR):
+     printf("E_BAD_ADDR\n");
+     break;  
+   }
+   */
 
    status = hpeOpen(ifname, phy_settings, interrupt_mode, &(port->handle));
-   if (status != E_OK)
+    if (status != E_OK)
    {
       ECAT_PRINT_ERROR("hpeOpen failed with status %04x ", status);
       if(status == E_EXIST) ECAT_PRINT_ERROR("E_EXIST\n");
@@ -379,6 +404,7 @@ int ecx_outframe(ecx_portt *port, int idx, int stacknumber)
    port->tx_buffers[idx]->buffers[0].fragments[0].size = lp;
 
    // wait for transmit to complete
+   //yja start mutex tx
    do
    {
      result = hpeGetTransmitterState(port->handle, &txstate) == E_OK && txstate == HPE_TXBUSY;
@@ -411,7 +437,7 @@ int ecx_outframe(ecx_portt *port, int idx, int stacknumber)
    result = lp;
 
 end:
-
+   //yja end mutex tx
    return result;
 }
 
@@ -536,6 +562,7 @@ int ecx_inframe(ecx_portt *port, int idx, int stacknumber)
    {
       WaitForRtControl(port->rx_region);
       /* non blocking call to retrieve frame from socket */
+      //yja start mutex rx
       if (ecx_recvpkt(port, stacknumber))
       {
          rval = EC_OTHERFRAME;
@@ -573,6 +600,7 @@ int ecx_inframe(ecx_portt *port, int idx, int stacknumber)
             }
          }
       }
+      //yja end mutex rx
       ReleaseRtControl();
    }
 
