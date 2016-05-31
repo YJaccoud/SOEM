@@ -127,8 +127,8 @@ typedef struct
 extern const uint16 priMAC[3];
 extern const uint16 secMAC[3];
 
-//extern ecx_portt     ecx_port;
-//extern ecx_redportt  ecx_redport;
+extern ecx_portt     ecx_port;
+extern ecx_redportt  ecx_redport;
 
 int ec_setupnic(const char * ifname, int secondary);
 int ec_closenic(void);

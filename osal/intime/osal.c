@@ -39,7 +39,10 @@
  * (www.beckhoff.com).
  */
 
+#include <windows.h>
+#include <iwin32.h>
 #include <rt.h>
+
 #include <sys/time.h>
 #include <osal.h>
 
@@ -48,11 +51,13 @@ static double qpc2usec;
 
 #define USECS_PER_SEC     1000000
 
-int osal_gettimeofday (struct timeval *tv, struct timezone *tz)
+//Internal
+int osal_gettimeofday (struct timeval *tv, void *tz)
 {
-   return gettimeofday (tv, tz);
+   return gettimeofday(tv, tz);   //tz not used
 }
 
+//Date and Time
 ec_timet osal_current_time (void)
 {
    struct timeval current_time;
@@ -99,26 +104,55 @@ int osal_usleep(uint32 usec)
    return 1;
 }
 
-/* Mutex is not needed when running single threaded */
+void osal_time_diff(ec_timet *start, ec_timet *end, ec_timet *diff)
+{
+   diff->sec = end->sec - start->sec;
+   diff->usec = end->usec - start->usec;
+   if (diff->usec < 0) {
+     --diff->sec;
+     diff->usec += 1000000;
+   }
+}
 
+//Thread
+int osal_thread_create(void **thandle, int stacksize, void *func, void *param)
+{
+  *thandle = CreateThread(NULL, stacksize, func, param, 0, NULL);
+   if(!thandle)
+      return 0;
+   return 1;
+}
+
+int osal_thread_create_rt(void **thandle, int stacksize, void *func, void *param)
+{
+  int ret;
+    ret = osal_thread_create(thandle, stacksize, func, param);
+  if (ret)
+    ret = SetThreadPriority(*thandle, THREAD_PRIORITY_ABOVE_NORMAL /*THREAD_PRIORITY_ABOVE_NORMAL = 126*/ /*THREAD_PRIORITY_HIGHEST = 117*/ /*THREAD_PRIORITY_TIME_CRITICAL = 0*/);
+  return ret;
+}
+
+/* Mutex is not needed when running single threaded */
+/*
 void osal_mtx_lock(osal_mutex_t * mtx)
 {
-        /* RtWaitForSingleObject((HANDLE)mtx, INFINITE); */
+        //RtWaitForSingleObject((HANDLE)mtx, INFINITE);
 }
 
 void osal_mtx_unlock(osal_mutex_t * mtx)
 {
-        /* RtReleaseMutex((HANDLE)mtx); */
+        //RtReleaseMutex((HANDLE)mtx);
 }
 
 int osal_mtx_lock_timeout(osal_mutex_t * mtx, uint32_t time_ms)
 {
-        /* return RtWaitForSingleObject((HANDLE)mtx, time_ms); */
+        //return RtWaitForSingleObject((HANDLE)mtx, time_ms);
         return 0;
 }
 
 osal_mutex_t * osal_mtx_create(void)
 {
-        /* return (void*)RtCreateMutex(NULL, FALSE, NULL); */
+        //return (void*)RtCreateMutex(NULL, FALSE, NULL);
         return (void *)0;
 }
+*/
