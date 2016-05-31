@@ -1,5 +1,12 @@
 cmake_minimum_required(VERSION 2.8.4)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
+list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_SOURCE_DIR}/cmake/Modules")
+list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}/CMakeINtime")
+
+if (COMPILATION_FOR_INTIME)
+   set(CMAKE_SYSTEM_NAME INtime)
+   set(CMAKE_GENERATOR_PLATFORM INtime)
+endif()
+
 project(SOEM C)
 
 if(DEFINED HOST_INSTALL)
@@ -11,10 +18,12 @@ endif()
 
 message("CMAKE_SYSTEM_NAME is ${CMAKE_SYSTEM_NAME}")
 
-if(WIN32)
+if(WIN32)   
    set(OS "win32")
-   include_directories(oshw/win32/wpcap/Include)
+   include_directories(${CMAKE_SOURCE_DIR}/oshw/win32/wpcap/Include)
    link_directories(${CMAKE_SOURCE_DIR}/oshw/win32/wpcap/Lib)
+elseif(COMPILATION_FOR_INTIME)
+   set(OS "intime")
 elseif(UNIX)
    set(OS "linux")
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "rt-kernel")
@@ -43,10 +52,6 @@ file(GLOB SOEM_SOURCES soem/*.c)
 file(GLOB OSAL_SOURCES osal/${OS}/*.c)
 file(GLOB OSHW_SOURCES oshw/${OS}/*.c)
 
-if(WIN32)
-  set(SOEM_SOURCES ${SOEM_SOURCES})
-endif()
-
 file(GLOB SOEM_HEADERS soem/*.h)
 file(GLOB OSAL_HEADERS osal/osal.h osal/${OS}/*.h)
 file(GLOB OSHW_HEADERS oshw/${OS}/*.h)
@@ -57,7 +62,7 @@ endif()
 
 add_library(soem STATIC ${SOEM_SOURCES} ${OSAL_SOURCES} ${OSHW_SOURCES} ${OSHW_ARCHSOURCES})
 if(WIN32)
-  target_link_libraries(soem wpcap.lib Packet.lib Ws2_32.lib Winmm.lib ${HDF5_LIBRARIES})
+   target_link_libraries(soem wpcap.lib Packet.lib Ws2_32.lib Winmm.lib ${HDF5_LIBRARIES})
 elseif(UNIX)
   target_link_libraries(soem pthread rt)
 endif()
@@ -65,6 +70,5 @@ endif()
 install(TARGETS soem DESTINATION lib)
 install(FILES ${SOEM_HEADERS} ${OSAL_HEADERS} ${OSHW_HEADERS} DESTINATION ${SOEM_INCLUDE_INSTALL_DIR})
 
-add_subdirectory(test/linux/slaveinfo)
-add_subdirectory(test/linux/eepromtool)
-add_subdirectory(test/linux/simple_test)
+add_subdirectory(test)
+
