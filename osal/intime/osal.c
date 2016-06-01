@@ -39,21 +39,18 @@
  * (www.beckhoff.com).
  */
 
-
-
 #include <windows.h>
 #include <iwin32.h>
 #include <rt.h>
 #include <stdlib.h>
 
-#include <sys\time.h>
+#include <sys/time.h>
 #include <osal.h>
 
 static int64_t sysfrequency;
 static double qpc2usec;
 
 #define USECS_PER_SEC     1000000
-
 
 /*
 * Operations on timevals. (WinSock2.h)
@@ -86,7 +83,7 @@ static double qpc2usec;
   }             \
   } while (0)
 
-//INTERNAL
+//Internal
 int osal_wait_for_single_object(void **thandle, uint32 timeout_us)
 {
   DWORD ret;
@@ -119,7 +116,7 @@ int osal_gettimeofday(struct timeval *tv, void *tz)
    return gettimeofday(tv, tz);
 }
 
-//DATE AND TIME
+//Date and Time
 ec_timet osal_current_time(void)
 {
    struct timeval current_time;
@@ -137,7 +134,7 @@ void osal_timer_start(osal_timert * self, uint32 timeout_usec)
    struct timeval timeout;
    struct timeval stop_time;
 
-   osal_gettimeofday (&start_time, 0);
+   osal_gettimeofday(&start_time, 0);
    timeout.tv_sec = timeout_usec / USECS_PER_SEC;
    timeout.tv_usec = timeout_usec % USECS_PER_SEC;
    timeradd(&start_time, &timeout, &stop_time);
@@ -152,7 +149,7 @@ boolean osal_timer_is_expired(osal_timert * self)
    struct timeval stop_time;
    int is_not_yet_expired;
 
-   osal_gettimeofday (&current_time, 0);
+   osal_gettimeofday(&current_time, 0);
    stop_time.tv_sec = self->stop_time.sec;
    stop_time.tv_usec = self->stop_time.usec;
    is_not_yet_expired = timercmp(&current_time, &stop_time, <);
@@ -201,7 +198,7 @@ void osal_free(void *ptr)
    free(ptr);
 }
 
-//THREAD
+//Thread
 int osal_thread_create(void **thandle, int stacksize, void *func, void *param)
 {
   *thandle = CreateThread(NULL, stacksize, func, param, 0, NULL);
@@ -271,7 +268,7 @@ int osal_event_wait(void **thandle, uint32 timeout_us)
   return osal_wait_for_single_object(thandle, timeout_us);
 }
 
-//Mutex is not needed when running single threaded
+/* Mutex is not needed when running single threaded */
 /*
 void osal_mtx_lock(osal_mutex_t * mtx)
 {

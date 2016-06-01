@@ -115,10 +115,10 @@ typedef struct
    int            redstate;
    /** pointer to redundancy port and buffers */
    ecx_redportt   *redport;
-   /* Intime */
    RTHANDLE       getindex_region;
    RTHANDLE       tx_region;
    RTHANDLE       rx_region;
+   /* Intime */
    HPEHANDLE      handle;
    HPERXBUFFERSET *rx_buffers;
    HPETXBUFFERSET *tx_buffers[EC_MAXBUF];

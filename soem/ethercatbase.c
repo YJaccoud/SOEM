@@ -110,7 +110,7 @@ int ecx_setupdatagram(ecx_portt *port, void *frame, uint8 com, uint8 idx, uint16
    /* Ethernet header is preset and fixed in frame buffers
       EtherCAT header needs to be added after that */
    datagramP = (ec_comt*)&frameP[ETH_HEADERSIZE];
-   datagramP->elength = htoes(EC_ECATTYPE + EC_HEADERSIZE + length);      //yja : htoes(EC_ECATTYPE + EC_HEADERSIZE - EC_ELENGTHSIZE + length + EC_ELENGTHSIZE + EC_WKCSIZE);
+   datagramP->elength = htoes(EC_ECATTYPE + EC_HEADERSIZE - EC_ELENGTHSIZE + length + EC_WKCSIZE);
    datagramP->command = com;
    datagramP->index = idx;
    datagramP->ADP = htoes(ADP);
@@ -150,7 +150,7 @@ int ecx_adddatagram(ecx_portt *port, void *frame, uint8 com, uint8 idx, boolean 
    prevlength = port->txbuflength[idx];
    datagramP = (ec_comt*)&frameP[ETH_HEADERSIZE];
    /* add new datagram to ethernet frame size */
-   datagramP->elength = htoes( etohs(datagramP->elength) + EC_HEADERSIZE + length );   //yja : htoes( etohs(datagramP->elength) + EC_HEADERSIZE - EC_ELENGTHSIZE + length + EC_WKCSIZE);
+   datagramP->elength = htoes( etohs(datagramP->elength) + EC_HEADERSIZE - EC_ELENGTHSIZE + length + EC_WKCSIZE);
    /* add "datagram follows" flag to previous subframe dlength */
    datagramP->dlength = htoes( etohs(datagramP->dlength) | EC_DATAGRAMFOLLOWS );
    /* set new EtherCAT header position */
@@ -174,7 +174,7 @@ int ecx_adddatagram(ecx_portt *port, void *frame, uint8 com, uint8 idx, boolean 
    frameP[prevlength + EC_HEADERSIZE - EC_ELENGTHSIZE + length] = 0x00;
    frameP[prevlength + EC_HEADERSIZE - EC_ELENGTHSIZE + length + 1] = 0x00;
    /* set size of frame in buffer array */
-   port->txbuflength[idx] = prevlength + EC_HEADERSIZE - EC_ELENGTHSIZE + EC_WKCSIZE + length;
+   port->txbuflength[idx] = prevlength + EC_HEADERSIZE - EC_ELENGTHSIZE + length + EC_WKCSIZE;
 
    /* return offset to data in rx frame
       14 bytes smaller than tx frame due to stripping of ethernet header */
