@@ -132,34 +132,9 @@ int ecx_setupnic(ecx_portt *port, const char *ifname, int secondary)
    int dontWaitForLink = 0;
    int result = 1;
    HPE_CONFIG_OPTIONS conf = { 0, 0, NULL};
-   
-   //HPEHANDLE handle;
-   
-   /*
-   status = hpeOpen("ie1g0", (PROBE_ONLY), ALL_INTERRUPTS, &handle);
-   printf("hpeOpen PROBE_ONLY, status : ");
-   switch (status)
-   {
-   case(E_OK) :
-     printf("E_OK\n");
-     break;
-   case(E_LIMIT):
-     printf("E_LIMIT\n");
-     break;
-   case(E_CONTEXT):
-     printf("E_CONTEXT\n");
-     break;
-   case(E_PARAM):
-     printf("E_PARAM\n");
-     break;
-   case(E_BAD_ADDR):
-     printf("E_BAD_ADDR\n");
-     break;  
-   }
-   */
 
    status = hpeOpen(ifname, phy_settings, interrupt_mode, &(port->handle));
-    if (status != E_OK)
+   if (status != E_OK)
    {
       ECAT_PRINT_ERROR("hpeOpen failed with status %04x ", status);
       if(status == E_EXIST) ECAT_PRINT_ERROR("E_EXIST\n");
