@@ -132,7 +132,7 @@ PACKED_BEGIN
 typedef struct PACKED
 {
    /** length of EtherCAT datagram */
-   uint16  elength;
+   uint16  elength;                               //yja : ethercat frame header
    /** EtherCAT command, see ec_cmdtype */
    uint8   command;
    /** index, used in SOEM for Tx to Rx recombination */

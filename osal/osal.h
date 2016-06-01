@@ -55,6 +55,7 @@ typedef struct osal_timer
     ec_timet stop_time;
 } osal_timert;
 
+void osal_init(void);
 void osal_timer_start(osal_timert * self, uint32 timeout_us);
 boolean osal_timer_is_expired(osal_timert * self);
 int osal_usleep(uint32 usec);
@@ -62,6 +63,19 @@ ec_timet osal_current_time(void);
 void osal_time_diff(ec_timet *start, ec_timet *end, ec_timet *diff);
 int osal_thread_create(void *thandle, int stacksize, void *func, void *param);
 int osal_thread_create_rt(void *thandle, int stacksize, void *func, void *param);
+
+int osal_thread_is_terminated(void **thandle, uint32 timeout_us);
+int osal_thread_delete(void **thandle);
+
+#define OSAL_NO_WAIT 0
+#define OSAL_WAIT_INFINITE 4294967295
+
+int osal_event_create(void **thandle);
+int osal_event_delete(void **thandle);
+int osal_event_set(void **thandle);
+int osal_event_reset(void **thandle);
+int osal_event_pulse(void **thandle);
+int osal_event_wait(void **thandle, uint32 timeout_us);
 
 #ifdef __cplusplus
 }

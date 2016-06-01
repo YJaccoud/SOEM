@@ -504,8 +504,8 @@ void si_sdo(int cnt)
 void slaveinfo(char *ifname)
 {
    int cnt, i, j, nSM;
-    uint16 ssigen;
-    int expectedWKC;
+   uint16 ssigen;
+   int expectedWKC;
 
    printf("Starting slaveinfo\n");
 
@@ -536,7 +536,6 @@ void slaveinfo(char *ifname)
                }
             }
          }
-
 
          ec_readstate();
          for( cnt = 1 ; cnt <= ec_slavecount ; cnt++)
@@ -631,7 +630,7 @@ int main(int argc, char *argv[])
    else
    {
       printf("Usage: slaveinfo ifname [options]\nifname = eth0 for example\nOptions :\n -sdo : print SDO info\n -map : print mapping\n");
-   	/* Print the list */
+
       printf ("Available adapters\n");
       adapter = ec_find_adapters ();
       while (adapter != NULL)
@@ -639,8 +638,18 @@ int main(int argc, char *argv[])
          printf ("Description : %s, Device to use for wpcap: %s\n", adapter->desc,adapter->name);
          adapter = adapter->next;
       }
+	  
+      //printf ("Choose : \\Device\\NPF_{0F64C3C3-D5DF-4011-ABDF-BD143AF8BEF1}\n");
+      printf("Choose : \\Device\\NPF_{0D0581D3-8EEB-4CD0-8569-E76FA9B08215}\n");
+      printSDO = FALSE;
+      printMAP = TRUE;
+      //strcpy(ifbuf, "\\Device\\NPF_{0F64C3C3-D5DF-4011-ABDF-BD143AF8BEF1}");
+      strcpy(ifbuf, "\\Device\\NPF_{0D0581D3-8EEB-4CD0-8569-E76FA9B08215}");
+      slaveinfo(ifbuf);
    }
 
    printf("End program\n");
+   osal_usleep(10000000);
+
    return (0);
 }

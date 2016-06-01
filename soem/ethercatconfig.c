@@ -935,7 +935,7 @@ int ecx_config_map_group(ecx_contextt *context, void *pIOmap, uint8 group)
          }
       }
 
-      /* do input mapping of slave and program FMMUs */
+      /* do output mapping of slave and program FMMUs */
       for (slave = 1; slave <= *(context->slavecount); slave++)
       {
          configadr = context->slavelist[slave].configadr;

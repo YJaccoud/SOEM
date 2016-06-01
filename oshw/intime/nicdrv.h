@@ -115,10 +115,10 @@ typedef struct
    int            redstate;
    /** pointer to redundancy port and buffers */
    ecx_redportt   *redport;
+   /* Intime */
    RTHANDLE       getindex_region;
    RTHANDLE       tx_region;
    RTHANDLE       rx_region;
-   /* Intime */
    HPEHANDLE      handle;
    HPERXBUFFERSET *rx_buffers;
    HPETXBUFFERSET *tx_buffers[EC_MAXBUF];
@@ -127,8 +127,8 @@ typedef struct
 extern const uint16 priMAC[3];
 extern const uint16 secMAC[3];
 
-//extern ecx_portt     ecx_port;
-//extern ecx_redportt  ecx_redport;
+extern ecx_portt     ecx_port;
+extern ecx_redportt  ecx_redport;
 
 int ec_setupnic(const char * ifname, int secondary);
 int ec_closenic(void);
