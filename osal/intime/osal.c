@@ -39,8 +39,11 @@
  * (www.beckhoff.com).
  */
 
+#include <windows.h>
+#include <iwin32.h>
 #include <rt.h>
 #include <sys/time.h>
+#include <stdlib.h>
 #include <osal.h>
 
 static int64_t sysfrequency;
@@ -48,12 +51,45 @@ static double qpc2usec;
 
 #define USECS_PER_SEC     1000000
 
-int osal_gettimeofday (struct timeval *tv, struct timezone *tz)
+
+/*
+* Operations on timevals. (WinSock2.h)
+*
+* NB: timercmp does not work for >= or <=.
+*/
+
+#define timerclear(tvp)   ((tvp)->tv_sec = (tvp)->tv_usec = 0)
+#define timerisset(tvp)   ((tvp)->tv_sec || (tvp)->tv_usec)
+#define timercmp(tvp, uvp, cmp)         \
+  (((tvp)->tv_sec == (uvp)->tv_sec) ?       \
+  ((tvp)->tv_usec cmp (uvp)->tv_usec) :     \
+  ((tvp)->tv_sec cmp (uvp)->tv_sec))
+#define timeradd(tvp, uvp, vvp)           \
+  do {                \
+  (vvp)->tv_sec = (tvp)->tv_sec + (uvp)->tv_sec;    \
+  (vvp)->tv_usec = (tvp)->tv_usec + (uvp)->tv_usec; \
+  if ((vvp)->tv_usec >= 1000000) {      \
+  (vvp)->tv_sec++;        \
+  (vvp)->tv_usec -= 1000000;      \
+  }             \
+  } while (0)
+#define timersub(tvp, uvp, vvp)           \
+  do {                \
+  (vvp)->tv_sec = (tvp)->tv_sec - (uvp)->tv_sec;    \
+  (vvp)->tv_usec = (tvp)->tv_usec - (uvp)->tv_usec; \
+  if ((vvp)->tv_usec < 0) {       \
+  (vvp)->tv_sec--;        \
+  (vvp)->tv_usec += 1000000;      \
+  }             \
+  } while (0)
+
+int osal_gettimeofday(struct timeval *tv, void *tz)
 {
-   return gettimeofday (tv, tz);
+   return gettimeofday(tv, tz);
 }
 
-ec_timet osal_current_time (void)
+//DATE AND TIME
+ec_timet osal_current_time(void)
 {
    struct timeval current_time;
    ec_timet return_value;
@@ -96,29 +132,59 @@ boolean osal_timer_is_expired (osal_timert * self)
 int osal_usleep(uint32 usec)
 {
    RtSleepEx (usec / 1000);
+void osal_time_diff(ec_timet *start, ec_timet *end, ec_timet *diff)
+{
+   diff->sec = end->sec - start->sec;
+   diff->usec = end->usec - start->usec;
+   if (diff->usec < 0) {
+     --diff->sec;
+     diff->usec += 1000000;
+   }
+}
    return 1;
 }
 
 /* Mutex is not needed when running single threaded */
+int osal_thread_create_rt(void **thandle, int stacksize, void *func, void *param)
+{
+  int ret;
+    ret = osal_thread_create(thandle, stacksize, func, param);
+  if (ret)
+    ret = SetThreadPriority(*thandle, THREAD_PRIORITY_ABOVE_NORMAL /*THREAD_PRIORITY_ABOVE_NORMAL = 126*/ /*THREAD_PRIORITY_HIGHEST = 117*/ /*THREAD_PRIORITY_TIME_CRITICAL = 0*/);
+  return ret;
+}
 
+int osal_thread_is_terminated(void **thandle, uint32 timeout_us)
+{
+  return osal_wait_for_single_object(thandle, timeout_us);
+}
+
+int osal_thread_delete(void **thandle)
+{
+  return osal_CloseHandle(thandle);
+}
+
+//Mutex is not needed when running single threaded
+/*
 void osal_mtx_lock(osal_mutex_t * mtx)
 {
-        /* RtWaitForSingleObject((HANDLE)mtx, INFINITE); */
+        //RtWaitForSingleObject((HANDLE)mtx, INFINITE);
 }
 
 void osal_mtx_unlock(osal_mutex_t * mtx)
 {
-        /* RtReleaseMutex((HANDLE)mtx); */
+        //RtReleaseMutex((HANDLE)mtx);
 }
 
 int osal_mtx_lock_timeout(osal_mutex_t * mtx, uint32_t time_ms)
 {
-        /* return RtWaitForSingleObject((HANDLE)mtx, time_ms); */
+        //return RtWaitForSingleObject((HANDLE)mtx, time_ms);
         return 0;
 }
 
 osal_mutex_t * osal_mtx_create(void)
 {
-        /* return (void*)RtCreateMutex(NULL, FALSE, NULL); */
+        //return (void*)RtCreateMutex(NULL, FALSE, NULL);
         return (void *)0;
 }
+*/
