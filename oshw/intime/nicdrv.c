@@ -101,14 +101,7 @@ const uint16 secMAC[3] = { 0x0404, 0x0404, 0x0404 };
 #define RX_PRIM priMAC[1]
 /** second MAC word is used for identification */
 #define RX_SEC secMAC[1]
-/*
-#ifdef EC_VER1
 
-ecx_portt      ecx_port;
-ecx_redportt   ecx_redport;
-
-#endif
-*/
 #define ECAT_PRINT_INFO    printf
 #define ECAT_PRINT_WARN    printf
 #define ECAT_PRINT_ERROR   printf
