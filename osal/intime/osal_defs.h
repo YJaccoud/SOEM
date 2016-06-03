@@ -59,6 +59,7 @@ extern "C"
     #endif
 #endif
 
+#define OSAL_EVENT_HANDLE    HANDLE
 #define OSAL_THREAD_HANDLE   HANDLE
 #define OSAL_THREAD_FUNC     void
 #define OSAL_THREAD_FUNC_RT  void
