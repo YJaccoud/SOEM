@@ -48,6 +48,33 @@ static double qpc2usec;
 
 #define USECS_PER_SEC     1000000
 
+int osal_wait_for_single_object(void **thandle, uint32 timeout_us)
+{
+  DWORD ret;
+  switch (timeout_us)
+  {
+  case OSAL_NO_WAIT:
+    ret = WaitForSingleObject(*thandle, 0);
+    break;
+  case OSAL_WAIT_INFINITE:
+    ret = WaitForSingleObject(*thandle, INFINITE);
+    break;
+  default:
+    ret = WaitForSingleObject(*thandle, timeout_us / 1000);
+    break;
+  }
+
+  if (ret == WAIT_OBJECT_0)
+    return (int)1;
+  else
+    return (int)0;
+}
+
+int osal_CloseHandle(void **thandle)
+{
+  return (int)CloseHandle(*thandle);
+}
+
 int osal_gettimeofday (struct timeval *tv, struct timezone *tz)
 {
    int64_t wintime, usecs;
@@ -156,4 +183,14 @@ int osal_thread_create_rt(void **thandle, int stacksize, void *func, void *param
       ret = SetThreadPriority(*thandle, THREAD_PRIORITY_TIME_CRITICAL);
    }
    return ret;
+}
+
+int osal_thread_is_terminated(void **thandle, uint32 timeout_us)
+{
+  return osal_wait_for_single_object(thandle, timeout_us);
+}
+
+int osal_thread_delete(void **thandle)
+{
+  return osal_CloseHandle(thandle);
 }
