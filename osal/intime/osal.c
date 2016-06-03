@@ -38,6 +38,7 @@
  * SOEM write to Beckhoff Automation GmbH, Eiserstraße 5, D-33415 Verl, Germany
  * (www.beckhoff.com).
  */
+#include <stdlib.h>
 
 #include <windows.h>
 #include <iwin32.h>
@@ -112,6 +113,17 @@ boolean osal_timer_is_expired(osal_timert * self)
   is_not_yet_expired = timercmp(&current_time, &stop_time, <);
 
   return is_not_yet_expired == FALSE;
+}
+
+//Memory
+void *osal_malloc(size_t size)
+{
+   return malloc(size);
+}
+
+void osal_free(void *ptr)
+{
+   free(ptr);
 }
 
 //Thread
