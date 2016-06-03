@@ -114,6 +114,17 @@ boolean osal_timer_is_expired(osal_timert * self)
   return is_not_yet_expired == FALSE;
 }
 
+//Memory
+void *osal_malloc(size_t size)
+{
+   return malloc(size);
+}
+
+void osal_free(void *ptr)
+{
+   free(ptr);
+}
+
 //Thread
 int osal_thread_create(void **thandle, int stacksize, void *func, void *param)
 {
