@@ -1,0 +1,19 @@
+INtime :
+   -eepromtool.exe
+    ie1g0 1 -i
+
+   -simple_test.exe
+    ie1g0
+
+   -slaveinfo.exe
+    ie1g0 -map
+
+Windows :
+   -eepromtool.exe
+    \Device\NPF_{84AD3DA8-ACED-45FB-AF59-89C719A9A712}ie1g0 1 -i
+
+   -simple_test.exe
+    \Device\NPF_{84AD3DA8-ACED-45FB-AF59-89C719A9A712}
+
+   -slaveinfo.exe
+    \Device\NPF_{84AD3DA8-ACED-45FB-AF59-89C719A9A712} -map
