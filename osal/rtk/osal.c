@@ -189,3 +189,15 @@ int osal_thread_create_rt(void *thandle, int stacksize, void *func, void *param)
    }
    return 1;
 }
+
+int osal_thread_is_terminated(void **thandle, uint32 timeout_us)
+{
+  /* not implemented yet */
+  return 0;
+}
+
+int osal_thread_delete(void **thandle)
+{
+  /* not implemented yet */
+  return 0;
+}
