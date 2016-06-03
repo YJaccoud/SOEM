@@ -201,3 +201,39 @@ int osal_thread_delete(void **thandle)
   /* not implemented yet */
   return 0;
 }
+
+int osal_event_create(void **thandle)
+{
+  /* not implemented yet */
+  return 0;
+}
+
+int osal_event_delete(void **thandle)
+{
+  /* not implemented yet */
+  return 0;
+}
+
+int osal_event_set(void **thandle)
+{
+  /* not implemented yet */
+  return 0;
+}
+
+int osal_event_reset(void **thandle)
+{
+  /* not implemented yet */
+  return 0;
+}
+
+int osal_event_pulse(void **thandle)
+{
+  /* not implemented yet */
+  return 0;
+}
+
+int osal_event_wait(void **thandle, uint32 timeout_us)
+{
+  /* not implemented yet */
+  return 0;
+}

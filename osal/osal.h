@@ -67,6 +67,12 @@ int osal_thread_create(void *thandle, int stacksize, void *func, void *param);
 int osal_thread_create_rt(void *thandle, int stacksize, void *func, void *param);
 int osal_thread_is_terminated(void **thandle, uint32 timeout_us);
 int osal_thread_delete(void **thandle);
+int osal_event_create(void **thandle);
+int osal_event_delete(void **thandle);
+int osal_event_set(void **thandle);
+int osal_event_reset(void **thandle);
+int osal_event_pulse(void **thandle);
+int osal_event_wait(void **thandle, uint32 timeout_us);
 
 #ifdef __cplusplus
 }

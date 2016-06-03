@@ -180,6 +180,48 @@ int osal_thread_delete(void **thandle)
   return osal_CloseHandle(thandle);
 }
 
+//Event
+int osal_event_create(void **thandle)
+{
+  HANDLE handle;
+  handle = CreateEvent(NULL, FALSE, FALSE, NULL);
+  if (handle == NULL)
+  {
+    *thandle = NULL;
+    return 0;
+  }
+  else
+  {
+    *thandle = handle;
+    return 1;
+  }
+}
+
+int osal_event_delete(void **thandle)
+{
+  return osal_CloseHandle(thandle);
+}
+
+int osal_event_set(void **thandle)
+{
+  return (int)SetEvent(*thandle);
+}
+
+int osal_event_reset(void **thandle)
+{
+  return (int)ResetEvent(*thandle);
+}
+
+int osal_event_pulse(void **thandle)
+{
+  return (int)PulseEvent(*thandle);
+}
+
+int osal_event_wait(void **thandle, uint32 timeout_us)
+{
+  return osal_wait_for_single_object(thandle, timeout_us);
+}
+
 /* Mutex is not needed when running single threaded */
 /*
 void osal_mtx_lock(osal_mutex_t * mtx)
