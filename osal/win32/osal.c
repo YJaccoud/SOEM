@@ -76,6 +76,18 @@ ec_timet osal_current_time (void)
    return return_value;
 }
 
+int osal_usleep(uint32 usec)
+{
+  osal_timert qtime;
+  osal_timer_start(&qtime, usec);
+  if (usec >= 1000)
+  {
+    SleepEx(usec / 1000, FALSE);
+  }
+  while (!osal_timer_is_expired(&qtime));
+  return 1;
+}
+
 void osal_time_diff(ec_timet *start, ec_timet *end, ec_timet *diff)
 {
    diff->sec = end->sec - start->sec;
@@ -113,18 +125,6 @@ boolean osal_timer_is_expired (osal_timert *self)
    is_not_yet_expired = timercmp (&current_time, &stop_time, <);
 
    return is_not_yet_expired == FALSE;
-}
-
-int osal_usleep(uint32 usec)
-{
-   osal_timert qtime;
-   osal_timer_start(&qtime, usec);
-   if(usec >= 1000)
-   {
-      SleepEx(usec / 1000, FALSE);
-   }
-   while(!osal_timer_is_expired(&qtime));
-   return 1;
 }
 
 void *osal_malloc(size_t size)

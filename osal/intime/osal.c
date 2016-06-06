@@ -69,35 +69,6 @@ ec_timet osal_current_time(void)
    return return_value;
 }
 
-void osal_timer_start(osal_timert * self, uint32 timeout_usec)
-{
-   struct timeval start_time;
-   struct timeval timeout;
-   struct timeval stop_time;
-
-   osal_gettimeofday(&start_time, 0);
-   timeout.tv_sec = timeout_usec / USECS_PER_SEC;
-   timeout.tv_usec = timeout_usec % USECS_PER_SEC;
-   timeradd(&start_time, &timeout, &stop_time);
-
-   self->stop_time.sec = stop_time.tv_sec;
-   self->stop_time.usec = stop_time.tv_usec;
-}
-
-boolean osal_timer_is_expired(osal_timert * self)
-{
-   struct timeval current_time;
-   struct timeval stop_time;
-   int is_not_yet_expired;
-
-   osal_gettimeofday(&current_time, 0);
-   stop_time.tv_sec = self->stop_time.sec;
-   stop_time.tv_usec = self->stop_time.usec;
-   is_not_yet_expired = timercmp(&current_time, &stop_time, <);
-
-   return is_not_yet_expired == FALSE;
-}
-
 int osal_usleep(uint32 usec)
 {
    RtSleepEx (usec / 1000);
@@ -112,6 +83,35 @@ void osal_time_diff(ec_timet *start, ec_timet *end, ec_timet *diff)
      --diff->sec;
      diff->usec += 1000000;
    }
+}
+
+void osal_timer_start(osal_timert * self, uint32 timeout_usec)
+{
+  struct timeval start_time;
+  struct timeval timeout;
+  struct timeval stop_time;
+
+  osal_gettimeofday(&start_time, 0);
+  timeout.tv_sec = timeout_usec / USECS_PER_SEC;
+  timeout.tv_usec = timeout_usec % USECS_PER_SEC;
+  timeradd(&start_time, &timeout, &stop_time);
+
+  self->stop_time.sec = stop_time.tv_sec;
+  self->stop_time.usec = stop_time.tv_usec;
+}
+
+boolean osal_timer_is_expired(osal_timert * self)
+{
+  struct timeval current_time;
+  struct timeval stop_time;
+  int is_not_yet_expired;
+
+  osal_gettimeofday(&current_time, 0);
+  stop_time.tv_sec = self->stop_time.sec;
+  stop_time.tv_usec = self->stop_time.usec;
+  is_not_yet_expired = timercmp(&current_time, &stop_time, <);
+
+  return is_not_yet_expired == FALSE;
 }
 
 //Thread

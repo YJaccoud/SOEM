@@ -99,12 +99,6 @@ int gettimeofday(struct timeval *tp, void *tzp)
    return 0;
 }
 
-int osal_usleep (uint32 usec)
-{
-   udelay(usec);
-   return 0;
-}
-
 int osal_gettimeofday(struct timeval *tv, struct timezone *tz)
 {
    return gettimeofday(tv, tz);
@@ -119,6 +113,22 @@ ec_timet osal_current_time (void)
    return_value.sec = current_time.tv_sec;
    return_value.usec = current_time.tv_usec;
    return return_value;
+}
+
+int osal_usleep(uint32 usec)
+{
+  udelay(usec);
+  return 0;
+}
+
+void osal_time_diff(ec_timet *start, ec_timet *end, ec_timet *diff)
+{
+  diff->sec = end->sec - start->sec;
+  diff->usec = end->usec - start->usec;
+  if (diff->usec < 0) {
+    --diff->sec;
+    diff->usec += 1000000;
+  }
 }
 
 void osal_timer_start (osal_timert * self, uint32 timeout_usec)

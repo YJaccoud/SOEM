@@ -48,15 +48,6 @@
 
 #define USECS_PER_SEC     1000000
 
-int osal_usleep (uint32 usec)
-{
-   struct timespec ts;
-   ts.tv_sec = usec / USECS_PER_SEC;
-   ts.tv_nsec = (usec % USECS_PER_SEC) * 1000;
-   /* usleep is depricated, use nanosleep instead */
-   return nanosleep(&ts, NULL);
-}
-
 int osal_gettimeofday(struct timeval *tv, struct timezone *tz)
 {
    struct timespec ts;
@@ -81,6 +72,15 @@ ec_timet osal_current_time(void)
    return_value.sec = current_time.tv_sec;
    return_value.usec = current_time.tv_usec;
    return return_value;
+}
+
+int osal_usleep(uint32 usec)
+{
+  struct timespec ts;
+  ts.tv_sec = usec / USECS_PER_SEC;
+  ts.tv_nsec = (usec % USECS_PER_SEC) * 1000;
+  /* usleep is depricated, use nanosleep instead */
+  return nanosleep(&ts, NULL);
 }
 
 void osal_time_diff(ec_timet *start, ec_timet *end, ec_timet *diff)
