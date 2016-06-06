@@ -513,6 +513,8 @@ void slaveinfo(char *ifname)
 
    printf("Starting slaveinfo\n");
 
+   osal_init();
+
    /* initialise SOEM, bind socket to ifname */
    if (ec_init(ifname))
    {

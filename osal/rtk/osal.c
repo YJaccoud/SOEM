@@ -72,7 +72,6 @@
 #define USECS_PER_SEC   1000000
 #define USECS_PER_TICK  (USECS_PER_SEC / CFG_TICKS_PER_SECOND)
 
-
 /* Workaround for rt-labs defect 776.
  * Default implementation of udelay() didn't work correctly when tick was
  * shorter than one millisecond.
@@ -102,6 +101,11 @@ int gettimeofday(struct timeval *tp, void *tzp)
 int osal_gettimeofday(struct timeval *tv, struct timezone *tz)
 {
    return gettimeofday(tv, tz);
+}
+
+void osal_init()
+{
+
 }
 
 ec_timet osal_current_time (void)

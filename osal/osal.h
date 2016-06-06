@@ -58,6 +58,7 @@ typedef struct osal_timer
 #define OSAL_NO_WAIT                0
 #define OSAL_WAIT_INFINITE 4294967295
 
+void osal_init(void);
 ec_timet osal_current_time(void);
 int osal_usleep(uint32 usec);
 void osal_time_diff(ec_timet *start, ec_timet *end, ec_timet *diff);

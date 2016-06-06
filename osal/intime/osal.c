@@ -46,8 +46,14 @@
 #include <sys/time.h>
 #include <osal.h>
 
+typedef struct osal_param
+{
+  uint16 lowLevelTickUs;
+} osal_paramt;
+
 static int64_t sysfrequency;
 static double qpc2usec;
+static osal_paramt osal_param = {500};
 
 #define USECS_PER_SEC     1000000
 
@@ -84,6 +90,14 @@ int osal_gettimeofday(struct timeval *tv, void *tz)
    return gettimeofday(tv, tz);   //tz not used
 }
 
+//Initialization
+void osal_init()
+{
+  SYSINFO sysInfo;
+  CopyRtSystemInfo(&sysInfo);
+  osal_param.lowLevelTickUs = sysInfo.NucleusTickInterval * 1000 / sysInfo.KernelTickRatio;
+}
+
 //Date and Time
 ec_timet osal_current_time(void)
 {
@@ -98,8 +112,8 @@ ec_timet osal_current_time(void)
 
 int osal_usleep(uint32 usec)
 {
-   RtSleepEx (usec / 1000);
-   return 1;
+  knRtSleep(usec / osal_param.lowLevelTickUs);
+  return 1;
 }
 
 void osal_time_diff(ec_timet *start, ec_timet *end, ec_timet *diff)

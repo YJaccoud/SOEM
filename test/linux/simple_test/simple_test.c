@@ -33,6 +33,8 @@ void simpletest(char *ifname)
 
    printf("Starting simple test\n");
 
+   osal_init();
+
    /* initialise SOEM, bind socket to ifname */
    if (ec_init(ifname))
    {
