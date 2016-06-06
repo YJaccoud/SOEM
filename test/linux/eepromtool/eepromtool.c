@@ -321,9 +321,9 @@ void eepromtool(char *ifname, int slave, int mode, char *fname)
       printf("ec_init on %s succeeded.\n",ifname);
 
       w = 0x0000;
-       wkc = ec_BRD(0x0000, ECT_REG_TYPE, sizeof(w), &w, EC_TIMEOUTSAFE);      /* detect number of slaves */
-       if (wkc > 0)
-       {
+      wkc = ec_BRD(0x0000, ECT_REG_TYPE, sizeof(w), &w, EC_TIMEOUTSAFE);      /* detect number of slaves */
+      if (wkc > 0)
+      {
          ec_slavecount = wkc;
 
          printf("%d slaves found.\n",ec_slavecount);
