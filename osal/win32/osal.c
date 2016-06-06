@@ -48,6 +48,33 @@ static double qpc2usec;
 
 #define USECS_PER_SEC     1000000
 
+int osal_wait_for_single_object(void **thandle, uint32 timeout_us)
+{
+  DWORD ret;
+  switch (timeout_us)
+  {
+  case OSAL_NO_WAIT:
+    ret = WaitForSingleObject(*thandle, NO_WAIT);
+    break;
+  case OSAL_WAIT_INFINITE:
+    ret = WaitForSingleObject(*thandle, WAIT_FOREVER);
+    break;
+  default:
+    ret = WaitForSingleObject(*thandle, timeout_us / 1000);
+    break;
+  }
+
+  if (ret == WAIT_OBJECT_0)
+    return (int)1;
+  else
+    return (int)0;
+}
+
+int osal_CloseHandle(void **thandle)
+{
+  return (int)CloseHandle(*thandle);
+}
+
 int osal_gettimeofday (struct timeval *tv, struct timezone *tz)
 {
    int64_t wintime, usecs;
@@ -65,6 +92,11 @@ int osal_gettimeofday (struct timeval *tv, struct timezone *tz)
    return 1;
 }
 
+void osal_init()
+{
+
+}
+
 ec_timet osal_current_time (void)
 {
    struct timeval current_time;
@@ -74,6 +106,18 @@ ec_timet osal_current_time (void)
    return_value.sec = current_time.tv_sec;
    return_value.usec = current_time.tv_usec;
    return return_value;
+}
+
+int osal_usleep(uint32 usec)
+{
+  osal_timert qtime;
+  osal_timer_start(&qtime, usec);
+  if (usec >= 1000)
+  {
+    SleepEx(usec / 1000, FALSE);
+  }
+  while (!osal_timer_is_expired(&qtime));
+  return 1;
 }
 
 void osal_time_diff(ec_timet *start, ec_timet *end, ec_timet *diff)
@@ -115,18 +159,6 @@ boolean osal_timer_is_expired (osal_timert *self)
    return is_not_yet_expired == FALSE;
 }
 
-int osal_usleep(uint32 usec)
-{
-   osal_timert qtime;
-   osal_timer_start(&qtime, usec);
-   if(usec >= 1000)
-   {
-      SleepEx(usec / 1000, FALSE);
-   }
-   while(!osal_timer_is_expired(&qtime));
-   return 1;
-}
-
 void *osal_malloc(size_t size)
 {
    return malloc(size);
@@ -156,4 +188,55 @@ int osal_thread_create_rt(void **thandle, int stacksize, void *func, void *param
       ret = SetThreadPriority(*thandle, THREAD_PRIORITY_TIME_CRITICAL);
    }
    return ret;
+}
+
+int osal_thread_is_terminated(void **thandle, uint32 timeout_us)
+{
+  return osal_wait_for_single_object(thandle, timeout_us);
+}
+
+int osal_thread_delete(void **thandle)
+{
+  return osal_CloseHandle(thandle);
+}
+
+int osal_event_create(void **thandle)
+{
+  HANDLE handle;
+  handle = CreateEvent(NULL, FALSE, FALSE, NULL);
+  if (handle == NULL)
+  {
+    *thandle = NULL;
+    return 0;
+  }
+  else
+  {
+    *thandle = handle;
+    return 1;
+  }
+}
+
+int osal_event_delete(void **thandle)
+{
+  return osal_CloseHandle(thandle);
+}
+
+int osal_event_set(void **thandle)
+{
+  return (int)SetEvent(*thandle);
+}
+
+int osal_event_reset(void **thandle)
+{
+  return (int)ResetEvent(*thandle);
+}
+
+int osal_event_pulse(void **thandle)
+{
+  return (int)PulseEvent(*thandle);
+}
+
+int osal_event_wait(void **thandle, uint32 timeout_us)
+{
+  return osal_wait_for_single_object(thandle, timeout_us);
 }

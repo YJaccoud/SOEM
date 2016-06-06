@@ -48,15 +48,6 @@
 
 #define USECS_PER_SEC     1000000
 
-int osal_usleep (uint32 usec)
-{
-   struct timespec ts;
-   ts.tv_sec = usec / USECS_PER_SEC;
-   ts.tv_nsec = (usec % USECS_PER_SEC) * 1000;
-   /* usleep is depricated, use nanosleep instead */
-   return nanosleep(&ts, NULL);
-}
-
 int osal_gettimeofday(struct timeval *tv, struct timezone *tz)
 {
    struct timespec ts;
@@ -72,6 +63,11 @@ int osal_gettimeofday(struct timeval *tv, struct timezone *tz)
    return return_value;
 }
 
+void osal_init()
+{
+
+}
+
 ec_timet osal_current_time(void)
 {
    struct timeval current_time;
@@ -81,6 +77,15 @@ ec_timet osal_current_time(void)
    return_value.sec = current_time.tv_sec;
    return_value.usec = current_time.tv_usec;
    return return_value;
+}
+
+int osal_usleep(uint32 usec)
+{
+  struct timespec ts;
+  ts.tv_sec = usec / USECS_PER_SEC;
+  ts.tv_nsec = (usec % USECS_PER_SEC) * 1000;
+  /* usleep is depricated, use nanosleep instead */
+  return nanosleep(&ts, NULL);
 }
 
 void osal_time_diff(ec_timet *start, ec_timet *end, ec_timet *diff)
@@ -174,4 +179,52 @@ int osal_thread_create_rt(void *thandle, int stacksize, void *func, void *param)
    }
 
    return 1;
+}
+
+int osal_thread_is_terminated(void **thandle, uint32 timeout_us)
+{
+  /* not implemented yet */
+  return 0;
+}
+
+int osal_thread_delete(void **thandle)
+{
+  /* not implemented yet */
+  return 0;
+}
+
+int osal_event_create(void **thandle)
+{
+  /* not implemented yet */
+  return 0;
+}
+
+int osal_event_delete(void **thandle)
+{
+  /* not implemented yet */
+  return 0;
+}
+
+int osal_event_set(void **thandle)
+{
+  /* not implemented yet */
+  return 0;
+}
+
+int osal_event_reset(void **thandle)
+{
+  /* not implemented yet */
+  return 0;
+}
+
+int osal_event_pulse(void **thandle)
+{
+  /* not implemented yet */
+  return 0;
+}
+
+int osal_event_wait(void **thandle, uint32 timeout_us)
+{
+  /* not implemented yet */
+  return 0;
 }

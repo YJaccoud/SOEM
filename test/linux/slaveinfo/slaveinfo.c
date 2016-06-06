@@ -508,10 +508,12 @@ void si_sdo(int cnt)
 void slaveinfo(char *ifname)
 {
    int cnt, i, j, nSM;
-    uint16 ssigen;
-    int expectedWKC;
+   uint16 ssigen;
+   int expectedWKC;
 
    printf("Starting slaveinfo\n");
+
+   osal_init();
 
    /* initialise SOEM, bind socket to ifname */
    if (ec_init(ifname))

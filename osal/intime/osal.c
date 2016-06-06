@@ -46,8 +46,14 @@
 #include <sys/time.h>
 #include <osal.h>
 
+typedef struct osal_param
+{
+  uint16 lowLevelTickUs;
+} osal_paramt;
+
 static int64_t sysfrequency;
 static double qpc2usec;
+static osal_paramt osal_param = {500};
 
 #define USECS_PER_SEC     1000000
 
@@ -84,6 +90,14 @@ int osal_gettimeofday(struct timeval *tv, void *tz)
    return gettimeofday(tv, tz);   //tz not used
 }
 
+//Initialization
+void osal_init()
+{
+  SYSINFO sysInfo;
+  CopyRtSystemInfo(&sysInfo);
+  osal_param.lowLevelTickUs = sysInfo.NucleusTickInterval * 1000 / sysInfo.KernelTickRatio;
+}
+
 //Date and Time
 ec_timet osal_current_time(void)
 {
@@ -96,53 +110,10 @@ ec_timet osal_current_time(void)
    return return_value;
 }
 
-void osal_timer_start(osal_timert * self, uint32 timeout_usec)
-{
-   struct timeval start_time;
-   struct timeval timeout;
-   struct timeval stop_time;
-
-   osal_gettimeofday(&start_time, 0);
-   timeout.tv_sec = timeout_usec / USECS_PER_SEC;
-   timeout.tv_usec = timeout_usec % USECS_PER_SEC;
-   timeradd(&start_time, &timeout, &stop_time);
-
-   self->stop_time.sec = stop_time.tv_sec;
-   self->stop_time.usec = stop_time.tv_usec;
-}
-
-boolean osal_timer_is_expired(osal_timert * self)
-{
-   struct timeval current_time;
-   struct timeval stop_time;
-   int is_not_yet_expired;
-
-   osal_gettimeofday(&current_time, 0);
-   stop_time.tv_sec = self->stop_time.sec;
-   stop_time.tv_usec = self->stop_time.usec;
-   is_not_yet_expired = timercmp(&current_time, &stop_time, <);
-
-   return is_not_yet_expired == FALSE;
-}
-
-uint16 lowLevelTickUs = 500;
-
-void osal_init()
-{
-  SYSINFO sysInfo;
-  CopyRtSystemInfo(&sysInfo);
-  lowLevelTickUs = sysInfo.NucleusTickInterval * 1000 / sysInfo.KernelTickRatio;
-}
-
 int osal_usleep(uint32 usec)
 {
-  knRtSleep(usec / lowLevelTickUs);
+  knRtSleep(usec / osal_param.lowLevelTickUs);
   return 1;
-
-  /*
-   RtSleepEx (usec / 1000); //warning : Dangerous abstract  (no wait < 1ms)
-   return 1;
-  */
 }
 
 void osal_time_diff(ec_timet *start, ec_timet *end, ec_timet *diff)
@@ -155,7 +126,36 @@ void osal_time_diff(ec_timet *start, ec_timet *end, ec_timet *diff)
    }
 }
 
-//MEMORY
+void osal_timer_start(osal_timert * self, uint32 timeout_usec)
+{
+  struct timeval start_time;
+  struct timeval timeout;
+  struct timeval stop_time;
+
+  osal_gettimeofday(&start_time, 0);
+  timeout.tv_sec = timeout_usec / USECS_PER_SEC;
+  timeout.tv_usec = timeout_usec % USECS_PER_SEC;
+  timeradd(&start_time, &timeout, &stop_time);
+
+  self->stop_time.sec = stop_time.tv_sec;
+  self->stop_time.usec = stop_time.tv_usec;
+}
+
+boolean osal_timer_is_expired(osal_timert * self)
+{
+  struct timeval current_time;
+  struct timeval stop_time;
+  int is_not_yet_expired;
+
+  osal_gettimeofday(&current_time, 0);
+  stop_time.tv_sec = self->stop_time.sec;
+  stop_time.tv_usec = self->stop_time.usec;
+  is_not_yet_expired = timercmp(&current_time, &stop_time, <);
+
+  return is_not_yet_expired == FALSE;
+}
+
+//Memory
 void *osal_malloc(size_t size)
 {
    return malloc(size);
@@ -194,7 +194,7 @@ int osal_thread_delete(void **thandle)
   return osal_CloseHandle(thandle);
 }
 
-//EVENT
+//Event
 int osal_event_create(void **thandle)
 {
   HANDLE handle;

@@ -315,15 +315,17 @@ void eepromtool(char *ifname, int slave, int mode, char *fname)
    int w, rc = 0, estart, esize;
    uint16 *wbuf;
 
+   osal_init();
+
    /* initialise SOEM, bind socket to ifname */
    if (ec_init(ifname))
    {
       printf("ec_init on %s succeeded.\n",ifname);
 
       w = 0x0000;
-       wkc = ec_BRD(0x0000, ECT_REG_TYPE, sizeof(w), &w, EC_TIMEOUTSAFE);      /* detect number of slaves */
-       if (wkc > 0)
-       {
+      wkc = ec_BRD(0x0000, ECT_REG_TYPE, sizeof(w), &w, EC_TIMEOUTSAFE);      /* detect number of slaves */
+      if (wkc > 0)
+      {
          ec_slavecount = wkc;
 
          printf("%d slaves found.\n",ec_slavecount);

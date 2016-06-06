@@ -72,7 +72,6 @@
 #define USECS_PER_SEC   1000000
 #define USECS_PER_TICK  (USECS_PER_SEC / CFG_TICKS_PER_SECOND)
 
-
 /* Workaround for rt-labs defect 776.
  * Default implementation of udelay() didn't work correctly when tick was
  * shorter than one millisecond.
@@ -99,15 +98,14 @@ int gettimeofday(struct timeval *tp, void *tzp)
    return 0;
 }
 
-int osal_usleep (uint32 usec)
-{
-   udelay(usec);
-   return 0;
-}
-
 int osal_gettimeofday(struct timeval *tv, struct timezone *tz)
 {
    return gettimeofday(tv, tz);
+}
+
+void osal_init()
+{
+
 }
 
 ec_timet osal_current_time (void)
@@ -119,6 +117,22 @@ ec_timet osal_current_time (void)
    return_value.sec = current_time.tv_sec;
    return_value.usec = current_time.tv_usec;
    return return_value;
+}
+
+int osal_usleep(uint32 usec)
+{
+  udelay(usec);
+  return 0;
+}
+
+void osal_time_diff(ec_timet *start, ec_timet *end, ec_timet *diff)
+{
+  diff->sec = end->sec - start->sec;
+  diff->usec = end->usec - start->usec;
+  if (diff->usec < 0) {
+    --diff->sec;
+    diff->usec += 1000000;
+  }
 }
 
 void osal_timer_start (osal_timert * self, uint32 timeout_usec)
@@ -178,4 +192,52 @@ int osal_thread_create_rt(void *thandle, int stacksize, void *func, void *param)
       return 0;
    }
    return 1;
+}
+
+int osal_thread_is_terminated(void **thandle, uint32 timeout_us)
+{
+  /* not implemented yet */
+  return 0;
+}
+
+int osal_thread_delete(void **thandle)
+{
+  /* not implemented yet */
+  return 0;
+}
+
+int osal_event_create(void **thandle)
+{
+  /* not implemented yet */
+  return 0;
+}
+
+int osal_event_delete(void **thandle)
+{
+  /* not implemented yet */
+  return 0;
+}
+
+int osal_event_set(void **thandle)
+{
+  /* not implemented yet */
+  return 0;
+}
+
+int osal_event_reset(void **thandle)
+{
+  /* not implemented yet */
+  return 0;
+}
+
+int osal_event_pulse(void **thandle)
+{
+  /* not implemented yet */
+  return 0;
+}
+
+int osal_event_wait(void **thandle, uint32 timeout_us)
+{
+  /* not implemented yet */
+  return 0;
 }

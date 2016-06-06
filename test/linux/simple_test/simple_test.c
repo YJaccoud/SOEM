@@ -27,11 +27,13 @@ uint8 currentgroup = 0;
 
 void simpletest(char *ifname)
 {
-    int i, j, oloop, iloop, chk;
-    needlf = FALSE;
-    inOP = FALSE;
+   int i, j, oloop, iloop, chk;
+   needlf = FALSE;
+   inOP = FALSE;
 
    printf("Starting simple test\n");
+
+   osal_init();
 
    /* initialise SOEM, bind socket to ifname */
    if (ec_init(ifname))
@@ -40,7 +42,7 @@ void simpletest(char *ifname)
       /* find and auto-config slaves */
 
 
-       if ( ec_config_init(FALSE) > 0 )
+      if ( ec_config_init(FALSE) > 0 )
       {
          printf("%d slaves found and configured.\n",ec_slavecount);
 
