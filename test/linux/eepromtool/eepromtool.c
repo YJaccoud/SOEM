@@ -315,6 +315,8 @@ void eepromtool(char *ifname, int slave, int mode, char *fname)
    int w, rc = 0, estart, esize;
    uint16 *wbuf;
 
+   osal_init();
+
    /* initialise SOEM, bind socket to ifname */
    if (ec_init(ifname))
    {

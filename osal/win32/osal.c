@@ -92,6 +92,11 @@ int osal_gettimeofday (struct timeval *tv, struct timezone *tz)
    return 1;
 }
 
+void osal_init()
+{
+
+}
+
 ec_timet osal_current_time (void)
 {
    struct timeval current_time;
