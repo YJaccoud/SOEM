@@ -279,29 +279,6 @@ static uint8 ecx_parentport(ecx_contextt *context, uint16 parent)
    return parentport;
 }
 
-uint64 ec_getmasterdctime(void)
-{
-  return ecx_getmasterdctime(&ecx_context);
-}
-
-/**
-* Todo yja. Algo found in ecx_configdc(...)
-*
-* @param[in]  context        = context struct
-* @return DC of master
-*/
-uint64 ecx_getmasterdctime(ecx_contextt *context)
-{
-  ec_timet mastertime;
-  uint64 mastertime64;
-
-  mastertime = osal_current_time();
-  mastertime.sec -= 946684800UL;  /* EtherCAT uses 2000-01-01 as epoch start instead of 1970-01-01 */
-  mastertime64 = (((uint64)mastertime.sec * 1000000) + (uint64)mastertime.usec) * 1000;
-
-  return mastertime64;
-}
-
 /**
  * Locate DC slaves, measure propagation delays.
  *
@@ -489,6 +466,24 @@ boolean ecx_configdc(ecx_contextt *context)
    return context->slavelist[0].hasdc;
 }
 
+/**
+* Return actual DC of master (64 bits unsigned, start the 01.01.2000 at 00:00)
+*
+* @param[in]  context        = context struct
+* @return actual DC of master
+*/
+uint64 ecx_getactualmasterdc(ecx_contextt *context)
+{
+  ec_timet masterdc;
+  uint64 masterdc64;
+
+  masterdc = osal_current_time();
+  masterdc.sec -= 946684800UL;  /* EtherCAT uses 2000-01-01 as epoch start instead of 1970-01-01 */
+  masterdc64 = (((uint64)masterdc.sec * 1000000) + (uint64)masterdc.usec) * 1000;
+
+  return masterdc64;
+}
+
 #ifdef EC_VER1
 void ec_dcsync0(uint16 slave, boolean act, uint32 CyclTime, int32 CyclShift)
 {
@@ -503,5 +498,10 @@ void ec_dcsync01(uint16 slave, boolean act, uint32 CyclTime0, uint32 CyclTime1, 
 boolean ec_configdc(void)
 {
    return ecx_configdc(&ecx_context);
+}
+
+uint64 ec_getactualmasterdc(void)
+{
+  return ecx_getactualmasterdc(&ecx_context);
 }
 #endif
