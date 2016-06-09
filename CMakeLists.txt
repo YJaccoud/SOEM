@@ -71,4 +71,5 @@ install(TARGETS soem DESTINATION lib)
 install(FILES ${SOEM_HEADERS} ${OSAL_HEADERS} ${OSHW_HEADERS} DESTINATION ${SOEM_INCLUDE_INSTALL_DIR})
 
 add_subdirectory(test)
+add_subdirectory(test/linux/antonpaar_validation)
 
