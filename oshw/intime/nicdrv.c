@@ -371,6 +371,7 @@ int ecx_outframe(ecx_portt *port, int idx, int stacknumber)
    port->tx_buffers[idx]->buffer_count = 1;
    port->tx_buffers[idx]->buffers[0].fragments[0].size = lp;
 
+   WaitForRtControl(port->tx_region);
    // wait for transmit to complete
    do
    {
@@ -404,7 +405,7 @@ int ecx_outframe(ecx_portt *port, int idx, int stacknumber)
    result = lp;
 
 end:
-
+   ReleaseRtControl();
    return result;
 }
 
