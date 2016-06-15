@@ -30,13 +30,10 @@
  *
  * (c)Arthur Ketels 2010 - 2011
  */
-#include <stdio.h>
-#include <string.h>
-#include <rt.h>
-#include <traceapi.h>
 
 #include "ethercat.h"
 
+#include "initialize_slaves.h"
 #include "measure_input_value.h"
 #include "measure_register_dc.h"
 #include "slaves_antonpaar.h"
@@ -73,32 +70,35 @@ void PrintMasterState()
    }
 }
 
-void PrintSlaveState()
+void PrintSlavesState()
 {
-   switch (ec_slave[1].state)
+   for (int i = 0; i < ec_slavecount; i++)
    {
-   case EC_STATE_INIT:
-      printf("EK1100 state : INIT\n");
-      break;
-   case EC_STATE_PRE_OP:
-      printf("EK1100 state : PRE OP\n");
-      break;
-   case EC_STATE_SAFE_OP:
-      printf("EK1100 state : SAFE OP\n");
-      break;
-   case EC_STATE_OPERATIONAL:
-      printf("EK1100 state : OP\n");
-      break;
-   case EC_STATE_ERROR:
-      printf("EK1100 state : ERROR\n");
-      break;
-   default:
-      printf("EK1100 state : unknown (%d)\n", ec_slave[1].state);
-      break;
+      switch (ec_slave[i+1].state)
+      {
+      case EC_STATE_INIT:
+         printf("Slave 100%d state : INIT\n", i + 1);
+         break;
+      case EC_STATE_PRE_OP:
+         printf("Slave 100%d state : PRE OP\n", i + 1);
+         break;
+      case EC_STATE_SAFE_OP:
+         printf("Slave 100%d state : SAFE OP\n", i + 1);
+         break;
+      case EC_STATE_OPERATIONAL:
+         printf("Slave 100%d state : OP\n", i + 1);
+         break;
+      case EC_STATE_ERROR:
+         printf("Slave 100%d state : ERROR\n", i + 1);
+         break;
+      default:
+         printf("Slave 100%d state : unknown (%d)\n", i + i, ec_slave[1].state);
+         break;
+      }
    }
 }
 
-void PrintSlaveInfo()
+void PrintSlavesIds()
 {
    for (int i = 0; i < ec_slavecount; i++)
    {
@@ -110,7 +110,7 @@ void PrintSlaveInfo()
    }
 }
 
-PrintEepromInfo()
+PrintEepromsPulseLength()
 {
    uint16 eepromPulseLength;
    for (int i = 0; i < ec_slavecount; i++)
@@ -122,84 +122,12 @@ PrintEepromInfo()
 }
 
 
-#define INDEX_THERMO_SETTINGS_CHANNEL_1   0x8000
-#define INDEX_THERMO_SETTINGS_CHANNEL_2   0x8010
-#define INDEX_THERMO_SETTINGS_CHANNEL_3   0x8020
-#define INDEX_THERMO_SETTINGS_CHANNEL_4   0x8030
 
-#define SUBINDEX_THERMO_TYPE              0x19
-#define SUBINDEX_NB_SIGNIFICANT_DIGIT     0x02
 
-#define PARAM_THERMO_TYPE_K               0
-#define PARAM_THERMO_TYPE_N               5
 
-#define PARAM_3_SIGNIFICANT_DIGIT         3
-#define PARAM_1_SIGNIFICANT_DIGIT         0
 
-int PO2SO_EL3314(uint16 slave)
-{
-   /*
-   uint16 ThermoType = PARAM_THERMO_TYPE_N;
 
-   ec_SDOwrite(slave, INDEX_THERMO_SETTINGS_CHANNEL_1, SUBINDEX_THERMO_TYPE, 0, sizeof(ThermoType), &ThermoType, INFINITE);
-   ec_SDOwrite(slave, INDEX_THERMO_SETTINGS_CHANNEL_2, SUBINDEX_THERMO_TYPE, 0, sizeof(ThermoType), &ThermoType, INFINITE);
-   ec_SDOwrite(slave, INDEX_THERMO_SETTINGS_CHANNEL_3, SUBINDEX_THERMO_TYPE, 0, sizeof(ThermoType), &ThermoType, INFINITE);
-   ec_SDOwrite(slave, INDEX_THERMO_SETTINGS_CHANNEL_4, SUBINDEX_THERMO_TYPE, 0, sizeof(ThermoType), &ThermoType, INFINITE);
-   */
-
-   uint8 Data = PARAM_3_SIGNIFICANT_DIGIT;
-
-   ec_SDOwrite(slave, INDEX_THERMO_SETTINGS_CHANNEL_1, SUBINDEX_NB_SIGNIFICANT_DIGIT, 0, sizeof(Data), &Data, INFINITE);
-   ec_SDOwrite(slave, INDEX_THERMO_SETTINGS_CHANNEL_2, SUBINDEX_NB_SIGNIFICANT_DIGIT, 0, sizeof(Data), &Data, INFINITE);
-   ec_SDOwrite(slave, INDEX_THERMO_SETTINGS_CHANNEL_3, SUBINDEX_NB_SIGNIFICANT_DIGIT, 0, sizeof(Data), &Data, INFINITE);
-   ec_SDOwrite(slave, INDEX_THERMO_SETTINGS_CHANNEL_4, SUBINDEX_NB_SIGNIFICANT_DIGIT, 0, sizeof(Data), &Data, INFINITE);
-
-   return 1;
-}
-
-int PO2SO_EL3104(uint16 slave)
-{
-   /*
-   uint8  NumberOfPdoAssignment;
-   uint16 PdoAssignment;
-
-   NumberOfPdoAssignment = 0;
-   ec_SDOwrite(slave, 0x1C13, 0, 0, sizeof(NumberOfPdoAssignment), &NumberOfPdoAssignment, INFINITE);
-
-   PdoAssignment = 0x1A01;
-   ec_SDOwrite(slave, 0x1C13, 1, 0, sizeof(PdoAssignment), &PdoAssignment, INFINITE);
-
-   PdoAssignment = 0x1A03;
-   ec_SDOwrite(slave, 0x1C13, 2, 0, sizeof(PdoAssignment), &PdoAssignment, INFINITE);
-
-   PdoAssignment = 0x1A05;
-   ec_SDOwrite(slave, 0x1C13, 3, 0, sizeof(PdoAssignment), &PdoAssignment, INFINITE);
-
-   PdoAssignment = 0x1A07;
-   ec_SDOwrite(slave, 0x1C13, 4, 0, sizeof(PdoAssignment), &PdoAssignment, INFINITE);
-
-   NumberOfPdoAssignment = 4;
-   ec_SDOwrite(slave, 0x1C13, 0, 0, sizeof(NumberOfPdoAssignment), &NumberOfPdoAssignment, INFINITE);
-   */
-
-   return 1;
-}
-
-#define MANUFACTURER_BECKHOFF 0x02
-#define PRODUCTCODE_EL3104    0xC203052
-#define PRODUCTCODE_EL3314    0xCF23052
-void ConfigPdoMapping()
-{
-   for (int i = 1; i <= ec_slavecount; i++)
-   {
-      if (ec_slave[i].eep_man == MANUFACTURER_BECKHOFF && ec_slave[i].eep_id == PRODUCTCODE_EL3104)
-         ec_slave[i].PO2SOconfig = PO2SO_EL3104;
-      else if (ec_slave[i].eep_man == MANUFACTURER_BECKHOFF && ec_slave[i].eep_id == PRODUCTCODE_EL3314)
-         ec_slave[i].PO2SOconfig = PO2SO_EL3314;
-   }
-}
-
-void PrintInputInt32(int32 data, uint32 cycleUpdate)
+void PrintCyclicInt32(int32 data, uint32 cycleUpdate)
 {
    static uint32 count;
 
@@ -231,70 +159,17 @@ void MeasureJitterOscillo()
 void CyclicProcess()
 {
    //PrintRegister();
-   //PrintInputInt32(*((int32*)(ec_slave[3].inputs + 2)), 3000);
+   //PrintCyclicInt32(*((int32*)(ec_slave[3].inputs + 2)), 3000);
 
-   MeasureBufferRegisterDc(10);
+   //MeasureBufferRegisterDc(10);
    //MeasureInputValueDoubleBuffer(IOmap + ec_slave[0].Obytes);
 
    //CommandSlavesAntonPaar();
    MeasureJitterOscillo();
 }
 
-#define DC_DIFFERENCE_REGISTER_ADDRESS        (0x92C)
-#define DC_DIFFERENCE_REGISTER_LENGTH         (4)
-
-ConfigDc(OSAL_EVENT_HANDLE * timerEvent)
-{
-   /*
-   uint16 pulseLengthSlave0;
-   uint16 pulseLengthSlave1;
-
-   pulseLengthSlave0 = (uint16)ec_readeeprom(0, PULSE_LENGTH_EEPROM_ADDRESS, EC_TIMEOUTEEP);
-   pulseLengthSlave1 = (uint16)ec_readeeprom(1, PULSE_LENGTH_EEPROM_ADDRESS, EC_TIMEOUTEEP);
-   pulseLengthSlave0 = pulseLengthSlave0 * 10;
-   pulseLengthSlave1 = pulseLengthSlave1 * 10;
-   */
-
-   int wkc, wkc1, wkc2;
-   RTHANDLE alarmHandle;
-   alarmHandle = CreateRtAlarm(KN_REPEATER, 500);
-   uint32 dcDifferenceSlave2 = 0xFFFFFFFF, dcDifferenceSlave3 = 0xFFFFFFFF;
-
-   ec_configdc();
-
-   //inputs analog
-   //register shift   : 0
-   //register cycle 0 : bus cycle
-   //register cycle 1 : 25 us
-   //ec_dcsync0(10, TRUE, 500000, 0);
-   //ec_dcsync01(10, TRUE, 500000, 500000, 25);
-
-   //outupus analog
-   //register shift   : 0
-   //register cycle 0 : bus cycle
-   //register cycle 1 : 100 us
-   //ec_dcsync01(10, TRUE, 1000000, 100000, 300000);
-
-   ec_dcsync01(10, TRUE, 1000000, 200000, 400000);
-   ec_dcsync01(11, TRUE, 1000000, 200000, 400000);
-
-   //"fonctionne"
-   //ec_dcsync01(10, TRUE, 10000000, 2000000, 4000000);
-
-   while (TRUE)
-   {
-      osal_event_wait(timerEvent, OSAL_WAIT_INFINITE);
-
-      ec_send_processdata();
-      wkc = ec_receive_processdata(EC_TIMEOUTRET);
-
-      wkc1 = ec_FPRD(10 + SLAVE_NUMBER_TO_SLAVE_ADDRESS_PHYSIC, DC_DIFFERENCE_REGISTER_ADDRESS, DC_DIFFERENCE_REGISTER_LENGTH, &dcDifferenceSlave2, EC_TIMEOUTRET3);
-      wkc2 = ec_FPRD(11 + SLAVE_NUMBER_TO_SLAVE_ADDRESS_PHYSIC, DC_DIFFERENCE_REGISTER_ADDRESS, DC_DIFFERENCE_REGISTER_LENGTH, &dcDifferenceSlave3, EC_TIMEOUTRET3);
-      //wait master digital PLL locked to reference clock (1st slave ?) where is the digitel pll ?
-      if (dcDifferenceSlave2 < 5 && dcDifferenceSlave3 < 5 && wkc1 == 1 && wkc2 == 1)
-         break;
-   }
-}
+//#define DC_DIFFERENCE_REGISTER_ADDRESS        (0x92C)
+//#define DC_DIFFERENCE_REGISTER_LENGTH         (4)
 
 OSAL_THREAD_FUNC serviceThreadRoutine(LPVOID lpParameter)
 {
@@ -366,15 +241,15 @@ OSAL_THREAD_FUNC_RT masterThreadRoutine(LPVOID lpParameter)
    ec_config_init(FALSE);
 
    printf("\n");
-   PrintSlaveInfo();
-   //PrintEepromInfo();
+   PrintSlavesIds();
+   //PrintEepromsPulseLength();
 
-   ConfigPdoMapping();
+   InitializeSlavesPoToSo();
 
    ec_config_map(&IOmap);
 
    //Config DC
-   ConfigDc(timerEvent);
+   InitializeSlavesSoToOp(timerEvent);
 
    //Go OP
    cpt = 0;
@@ -448,7 +323,6 @@ OSAL_THREAD_FUNC_RT timerThreadRoutine(LPVOID lpParameter)
       WaitForRtAlarm(alarmHandle, 1000 * 1000);
       osal_event_set((OSAL_EVENT_HANDLE*)lpParameter);
    }
-
 }
 
 void antonpaar_validation(/*char *ifname*/)
@@ -470,7 +344,7 @@ void antonpaar_validation(/*char *ifname*/)
       //!osal_thread_is_terminated(&serviceThread, OSAL_NO_WAIT)  )
    {
       //WriteInputValueDoubleBuffer();
-      WriteBufferRegisterDc();
+      //WriteBufferRegisterDc();
       osal_usleep(10000);
    }
 
@@ -534,4 +408,3 @@ void main(int argc, char* argv[])
    printf("End program\n");
 
 }
-
