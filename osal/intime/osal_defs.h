@@ -42,6 +42,8 @@
 #ifndef _osal_defs_
 #define _osal_defs_
 
+#include <rt.h>
+
 #ifdef __cplusplus
 extern "C"
 {

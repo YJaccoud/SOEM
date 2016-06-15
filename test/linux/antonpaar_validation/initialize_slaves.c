@@ -186,7 +186,7 @@ void InitializeSlavesPoToSo()
 #define DC_DIFFERENCE_REGISTER_ADDRESS          (0x92C)
 #define DC_DIFFERENCE_REGISTER_LENGTH           (4)
 
-void InitializeSlavesSoToOp(OSAL_EVENT_HANDLE * timerEvent)
+void InitializeSlavesSoToOp(OSAL_EVENT_HANDLE*  timerEvent)
 {
    int re = 0, i = 0, j = 0;
    int slaveDcId[MAX_DC_SLAVES_NUMBER] = {0};

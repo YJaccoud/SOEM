@@ -5,12 +5,11 @@
 extern "C"
 {
 #endif
-
 #include "osal.h"
 
+
 void InitializeSlavesPoToSo();
-//void InitializeSlavesSoToOp(OSAL_EVENT_HANDLE * timerEvent);
-void InitializeSlavesSoToOp(void ** timerEvent);
+void InitializeSlavesSoToOp(OSAL_EVENT_HANDLE*  timerEvent);
 
 #ifdef __cplusplus
 }
