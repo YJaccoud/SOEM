@@ -38,6 +38,7 @@
  * SOEM write to Beckhoff Automation GmbH, Eiserstraße 5, D-33415 Verl, Germany
  * (www.beckhoff.com).
  */
+#include <stdlib.h>
 
 #include <windows.h>
 #include <iwin32.h>
