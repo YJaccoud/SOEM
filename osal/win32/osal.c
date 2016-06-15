@@ -54,10 +54,10 @@ int osal_wait_for_single_object(void **thandle, uint32 timeout_us)
   switch (timeout_us)
   {
   case OSAL_NO_WAIT:
-    ret = WaitForSingleObject(*thandle, NO_WAIT);
+    ret = WaitForSingleObject(*thandle, 0);
     break;
   case OSAL_WAIT_INFINITE:
-    ret = WaitForSingleObject(*thandle, WAIT_FOREVER);
+    ret = WaitForSingleObject(*thandle, INFINITE);
     break;
   default:
     ret = WaitForSingleObject(*thandle, timeout_us / 1000);
