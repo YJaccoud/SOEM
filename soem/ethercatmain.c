@@ -1346,7 +1346,7 @@ int ecx_writeeepromAP(ecx_contextt *context, uint16 aiadr, uint16 eeproma, uint1
                if (estat & EC_ESTAT_NACK)
                {
                   nackcnt++;
-                  osal_usleep(EC_LOCALDELAY * 5);
+                  osal_usleep(EC_LOCALDELAY * 10);
                }
                else
                {
@@ -1514,7 +1514,7 @@ int ecx_writeeepromFP(ecx_contextt *context, uint16 configadr, uint16 eeproma, u
                if (estat & EC_ESTAT_NACK)
                {
                   nackcnt++;
-                  osal_usleep(EC_LOCALDELAY * 5);
+                  osal_usleep(EC_LOCALDELAY * 10);
                }
                else
                {
